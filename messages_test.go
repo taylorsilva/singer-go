@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 	"bytes"
-	"strings"
 )
 
 var (
@@ -18,8 +17,9 @@ func TestWriteRecord(t *testing.T) {
 	result := string(`{"type":"RECORD","stream":"streamValue","record":{"name":"foo"},"version":"","time_extracted":"2000-01-01T00:00:00-05:00"}
 `)
 	WriteRecord("streamValue", []byte(`{"name": "foo"}`), "", "", testDateTime)
-	if strings.Compare(writer.String(), result) != 0 {
+	if writer.String() != result {
 		t.Error("Expected: ", result,
 			"Got: ", writer.String())
 	}
+	writer.Reset()
 }
