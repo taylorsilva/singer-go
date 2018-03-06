@@ -9,7 +9,7 @@ import (
 var (
 	writer          = new(bytes.Buffer)
 )
-
+// TODO: tests should check that valid json is returned
 func TestWriteRecord(t *testing.T) {
 	OUTPUT = writer
 	result := string(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"},"version":"","time_extracted":"0001-01-01T00:00:00Z"}
@@ -22,11 +22,24 @@ func TestWriteRecord(t *testing.T) {
 	writer.Reset()
 }
 
+func TestWriteRecords(t *testing.T) {
+	OUTPUT = writer
+	result := string(`{"type":"RECORD","stream":"users","record":{"id":1,"name":"Chris"}}
+{"type":"RECORD","stream":"users","record":{"id":2,"name":"Mike"}}
+`)
+	records := [][]byte {[]byte(`{"id":1,"name":"Chris"}`),[]byte(`{"id":2,"name":"Mike"}`)}
+	WriteRecords("users", records, "", "", time.Time{})
+	if writer.String() != result {
+		t.Error("Expected:", result, "Got:", writer.String())
+	}
+	writer.Reset()
+}
+
 func TestWriteSchema(t *testing.T) {
 	OUTPUT = writer
 	result := string(`{"type":"SCHEMA","stream":"users","schema":{"properties":{"name":{"type":"string"}},"type":"object"},"key_properties":["name"]}
 `)
-	WriteSchema("users", []byte(`{"type": "object", "properties": {"name": {"type": "string"}}}`), []string {"name"})
+	WriteSchema("users", []byte(`{"type": "object", "properties": {"name": {"type": "string"}}}`), []string {"name"}, []string{})
 	if writer.String() != result {
 		t.Error("Expected:", result, "Got:", writer.String())
 	}
