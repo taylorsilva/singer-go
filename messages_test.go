@@ -7,16 +7,14 @@ import (
 )
 
 var (
-	testLocation, _ = time.LoadLocation("America/New_York")
-	testDateTime    = time.Date(2000, time.January, 1, 0, 0, 0, 0, testLocation)
 	writer          = new(bytes.Buffer)
 )
 
 func TestWriteRecord(t *testing.T) {
 	OUTPUT = writer
-	result := string(`{"type":"RECORD","stream":"streamValue","record":{"name":"foo"},"version":"","time_extracted":"2000-01-01T00:00:00-05:00"}
+	result := string(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"},"version":"","time_extracted":"0001-01-01T00:00:00Z"}
 `)
-	WriteRecord("streamValue", []byte(`{"name": "foo"}`), "", "", testDateTime)
+	WriteRecord("streamValue", []byte(`{"id":12,"name": "foo"}`), "", "", time.Time{})
 	if writer.String() != result {
 		t.Error("Expected: ", result,
 			"Got: ", writer.String())
