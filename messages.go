@@ -91,7 +91,7 @@ func newSchemaMessage(stream string, schemaJson []byte, keyProperties []string, 
 		Stream:        stream,
 		Schema:        s,
 		KeyProperties: keyProperties,
-		Bookmarks: bookmarks,
+		Bookmarks:     bookmarks,
 	}, nil
 }
 
@@ -146,7 +146,16 @@ func writeMessage(msg Message) {
 	json.NewEncoder(OUTPUT).Encode(msg.AsMap())
 }
 
-func WriteRecord(stream string, jsonRecord []byte, version string, streamAlias string, timeExtracted time.Time) error {
+func WriteRecord(stream string, jsonRecord []byte) error {
+	err := WriteRecordExtras(stream, jsonRecord, "", "", time.Time{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteRecordExtras(stream string, jsonRecord []byte, streamAlias string, version string,
+	timeExtracted time.Time) error {
 	msg, err := newRecordMessage(stream, jsonRecord, version, timeExtracted)
 	if err != nil {
 		return err
@@ -155,9 +164,17 @@ func WriteRecord(stream string, jsonRecord []byte, version string, streamAlias s
 	return nil
 }
 
-func WriteRecords(stream string, jsonRecords [][]byte, version string, streamAlias string, timeExtracted time.Time) error {
+func WriteRecords(stream string, jsonRecords [][]byte) error {
+	err := WriteRecordsExtras(stream, jsonRecords, "", "", time.Time{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func WriteRecordsExtras(stream string, jsonRecords [][]byte, version string, streamAlias string, timeExtracted time.Time) error {
 	for _, record := range jsonRecords {
-		err := WriteRecord(stream, record, version, streamAlias, timeExtracted)
+		err := WriteRecordExtras(stream, record, version, streamAlias, timeExtracted)
 		if err != nil {
 			return err
 		}
