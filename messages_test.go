@@ -3,22 +3,19 @@ package singer
 import (
 	"bytes"
 	"testing"
-	"time"
+	"github.com/onsi/gomega"
 )
 
 var (
 	writer          = new(bytes.Buffer)
 )
-// TODO: tests should check that valid json is returned
+
 func TestWriteRecord(t *testing.T) {
+	g := gomega.NewGomegaWithT(t)
 	OUTPUT = writer
-	result := string(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"},"version":"","time_extracted":"0001-01-01T00:00:00Z"}
-`)
-	WriteRecord("streamValue", []byte(`{"id":12,"name": "foo"}`), "", "", time.Time{})
-	if writer.String() != result {
-		t.Error("Expected: ", result,
-			"Got: ", writer.String())
-	}
+	result := string(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"}}`)
+	WriteRecord("streamValue", []byte(`{"id":12,"name": "foo"}`))
+	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Single record should match")
 	writer.Reset()
 }
 
@@ -28,7 +25,7 @@ func TestWriteRecords(t *testing.T) {
 {"type":"RECORD","stream":"users","record":{"id":2,"name":"Mike"}}
 `)
 	records := [][]byte {[]byte(`{"id":1,"name":"Chris"}`),[]byte(`{"id":2,"name":"Mike"}`)}
-	WriteRecords("users", records, "", "", time.Time{})
+	WriteRecords("users", records)
 	if writer.String() != result {
 		t.Error("Expected:", result, "Got:", writer.String())
 	}
