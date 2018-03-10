@@ -109,7 +109,7 @@ func (s *schemaMessage) AsMap() map[string]interface{} {
 }
 
 type stateMessage struct {
-	Type  string `json:"type"`
+	Type  string
 	Value map[string]interface{}
 }
 
@@ -125,6 +125,14 @@ func newStateMessage(value []byte) (*stateMessage, error) {
 		Type:  "STATE",
 		Value: v,
 	}, nil
+}
+
+func (s *stateMessage) AsMap() map[string]interface{}  {
+	msg := map[string]interface{}{
+		KEYTYPE: s.Type,
+		KEYVALUE: s.Value,
+	}
+	return msg
 }
 
 type activateVersionMessage struct {
@@ -201,7 +209,7 @@ func WriteState(jsonValues []byte) error {
 	if err != nil {
 		return err
 	}
-	json.NewEncoder(OUTPUT).Encode(msg)
+	writeMessage(msg)
 	return nil
 }
 
