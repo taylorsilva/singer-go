@@ -13,15 +13,16 @@ var (
 func TestWriteRecord(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
 	OUTPUT = writer
+	defer writer.Reset()
 	result := []byte(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"}}`)
 	WriteRecord("streamValue", []byte(`{"id":12,"name": "foo"}`))
 	g.Expect(writer.String()).To(gomega.MatchJSON(result), "JSON records should match")
-	writer.Reset()
 }
 
 func TestWriteRecords(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
 	OUTPUT = writer
+	defer writer.Reset()
 	result := [][]byte{[]byte(`{"type":"RECORD","stream":"users","record":{"id":1,"name":"Chris"}}`),
 		[]byte(`{"type":"RECORD","stream":"users","record":{"id":2,"name":"Mike"}}`)}
 	records := [][]byte{[]byte(`{"id":1,"name":"Chris"}`), []byte(`{"id":2,"name":"Mike"}`)}
@@ -33,12 +34,12 @@ func TestWriteRecords(t *testing.T) {
 		}
 		g.Expect(line).To(gomega.MatchJSON(result[i]), "Each record should output on its own line and be a valid JSON object")
 	}
-	writer.Reset()
 }
 
 func TestWriteSchema(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
 	OUTPUT = writer
+	defer writer.Reset()
 	result := []byte(`{"type":"SCHEMA","stream":"users","schema":{"properties":{"name":{"type":"string"}},"type":"object"},"key_properties":["name"]}
 `)
 	streamName := "users"
@@ -48,5 +49,4 @@ func TestWriteSchema(t *testing.T) {
 	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Output should be Schema JSON object")
 	lastByte := writer.Bytes()[len(writer.Bytes())-1]
 	g.Expect(lastByte).To(gomega.Equal(byte('\n')), "Output should end in line break")
-	writer.Reset()
 }
