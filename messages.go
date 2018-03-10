@@ -127,26 +127,12 @@ func newStateMessage(value []byte) (*stateMessage, error) {
 	}, nil
 }
 
-func (s *stateMessage) AsMap() map[string]interface{}  {
+func (s *stateMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
-		KEYTYPE: s.Type,
+		KEYTYPE:  s.Type,
 		KEYVALUE: s.Value,
 	}
 	return msg
-}
-
-type activateVersionMessage struct {
-	Type    string `json:"type"`
-	Stream  string `json:"stream"`
-	Version string `json:"version"`
-}
-
-func newActivateVersionMsg(stream string, version string) *activateVersionMessage {
-	return &activateVersionMessage{
-		Type:    "ACTIVATE_VERSION",
-		Stream:  stream,
-		Version: version,
-	}
 }
 
 func writeMessage(msg Message) {
@@ -211,11 +197,6 @@ func WriteState(jsonValues []byte) error {
 	}
 	writeMessage(msg)
 	return nil
-}
-
-func WriteActiveVersion(stream string, version string) {
-	msg := newActivateVersionMsg(stream, version)
-	json.NewEncoder(OUTPUT).Encode(msg)
 }
 
 // returns one of the above message types
