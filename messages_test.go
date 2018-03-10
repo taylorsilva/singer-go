@@ -49,3 +49,18 @@ func TestWriteSchema(t *testing.T) {
 	lastByte := writer.Bytes()[len(writer.Bytes())-1]
 	g.Expect(lastByte).To(gomega.Equal(byte('\n')), "Output should end in line break")
 }
+
+func TestWriteSchemaExtras(t *testing.T) {
+	g := gomega.NewGomegaWithT(t)
+	OUTPUT = writer
+	defer writer.Reset()
+	result := []byte(`{"type":"SCHEMA","stream":"users","schema":{"properties":{"name":{"type":"string"}},"type":"object"},"key_properties":["name"], "bookmark_properties":["name"]}`)
+	streamName := "users"
+	schema := []byte(`{"type": "object", "properties": {"name": {"type": "string"}}}`)
+	keyProperties := []string{"name"}
+	bookmarks := []string{"name"}
+	WriteSchemaExtras(streamName, schema, keyProperties, bookmarks)
+	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Output should be Schema JSON object")
+	lastByte := writer.Bytes()[len(writer.Bytes())-1]
+	g.Expect(lastByte).To(gomega.Equal(byte('\n')))
+}
