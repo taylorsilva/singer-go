@@ -143,6 +143,7 @@ func newActivateVersionMsg(stream string, version string) *activateVersionMessag
 
 func writeMessage(msg Message) {
 	// TODO: research easyjson for faster encoding
+	// Encode() adds a line break
 	json.NewEncoder(OUTPUT).Encode(msg.AsMap())
 }
 
@@ -187,7 +188,7 @@ func WriteSchema(stream string, schemaJson []byte, keyProperties []string, bookm
 	if err != nil {
 		return err
 	}
-	json.NewEncoder(OUTPUT).Encode(msg)
+	writeMessage(msg)
 	return nil
 }
 
