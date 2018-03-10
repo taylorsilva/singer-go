@@ -31,7 +31,7 @@ func TestWriteRecords(t *testing.T) {
 		if err != nil {
 			break
 		}
-		g.Expect(line).To(gomega.MatchJSON(result[i]), "Each record should output on its own line")
+		g.Expect(line).To(gomega.MatchJSON(result[i]), "Each record should output on its own line and be a valid JSON object")
 	}
 	writer.Reset()
 }
@@ -47,5 +47,7 @@ func TestWriteSchema(t *testing.T) {
 	bookmarks := []string{}
 	WriteSchema(streamName, schema, keyProperties, bookmarks)
 	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Output should be Schema JSON object")
+	lastByte := writer.Bytes()[len(writer.Bytes())-1]
+	g.Expect(lastByte).To(gomega.Equal(byte('\n')), "Output should end in line break")
 	writer.Reset()
 }
