@@ -183,7 +183,11 @@ func WriteRecordsExtras(stream string, jsonRecords [][]byte, version string, str
 	return nil
 }
 
-func WriteSchema(stream string, schemaJson []byte, keyProperties []string, bookmarks []string) error {
+func WriteSchema(stream string, schemaJson []byte, keyProperties []string) error {
+	return WriteSchemaExtras(stream, schemaJson, keyProperties, []string{})
+}
+
+func WriteSchemaExtras(stream string, schemaJson []byte, keyProperties []string, bookmarks []string) error {
 	msg, err := newSchemaMessage(stream, schemaJson, keyProperties, bookmarks)
 	if err != nil {
 		return err
