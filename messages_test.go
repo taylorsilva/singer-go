@@ -44,8 +44,7 @@ func TestWriteSchema(t *testing.T) {
 	streamName := "users"
 	schema := []byte(`{"type": "object", "properties": {"name": {"type": "string"}}}`)
 	keyProperties := []string{"name"}
-	bookmarks := []string{}
-	WriteSchema(streamName, schema, keyProperties, bookmarks)
+	WriteSchema(streamName, schema, keyProperties)
 	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Output should be Schema JSON object")
 	lastByte := writer.Bytes()[len(writer.Bytes())-1]
 	g.Expect(lastByte).To(gomega.Equal(byte('\n')), "Output should end in line break")
