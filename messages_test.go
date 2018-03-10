@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/onsi/gomega"
 	"testing"
+	"encoding/json"
 )
 
 var (
@@ -63,4 +64,21 @@ func TestWriteSchemaExtras(t *testing.T) {
 	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Output should be Schema JSON object")
 	lastByte := writer.Bytes()[len(writer.Bytes())-1]
 	g.Expect(lastByte).To(gomega.Equal(byte('\n')))
+}
+
+func TestWriteState(t *testing.T) {
+	g := gomega.NewGomegaWithT(t)
+	OUTPUT = writer
+	defer writer.Reset()
+	result := []byte(`{"type": "STATE", "value": {"users": 2, "locations": 1}}`)
+	value := map[string]interface{}{
+		"users": 2,
+		"locations": 1,
+	}
+	j, _ := json.Marshal(value)
+	WriteState(j)
+	g.Expect(writer.String()).To(gomega.MatchJSON(result), "Output should be State JSON object")
+
+	lastByte := writer.Bytes()[len(writer.Bytes())-1]
+	g.Expect(lastByte).To(gomega.Equal(byte('\n')), "Output should end in line break")
 }
