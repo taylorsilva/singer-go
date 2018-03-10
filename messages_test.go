@@ -39,7 +39,7 @@ func TestWriteRecords(t *testing.T) {
 func TestWriteSchema(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
 	OUTPUT = writer
-	result := []byte(`{"type":"SCHEMA","streamName":"users","schema":{"properties":{"name":{"type":"string"}},"type":"object"},"key_properties":["name"]}
+	result := []byte(`{"type":"SCHEMA","stream":"users","schema":{"properties":{"name":{"type":"string"}},"type":"object"},"key_properties":["name"]}
 `)
 	streamName := "users"
 	schema := []byte(`{"type": "object", "properties": {"name": {"type": "string"}}}`)
