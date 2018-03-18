@@ -56,7 +56,7 @@ func newRecordMessage(stream string, jsonRecord []byte, version string, timeExtr
 
 // returns the record and excludes unused fields like version and
 // extracted_time if they're equal to their zero values
-func (r *recordMessage) AsMap() map[string]interface{} {
+func (r recordMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
 		KEYTYPE:   r.Type,
 		KEYSTREAM: r.Stream,
@@ -95,7 +95,7 @@ func newSchemaMessage(stream string, schemaJson []byte, keyProperties []string, 
 	}, nil
 }
 
-func (s *schemaMessage) AsMap() map[string]interface{} {
+func (s schemaMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
 		KEYTYPE:       s.Type,
 		KEYSTREAM:     s.Stream,
@@ -127,7 +127,7 @@ func newStateMessage(value []byte) (*stateMessage, error) {
 	}, nil
 }
 
-func (s *stateMessage) AsMap() map[string]interface{} {
+func (s stateMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
 		KEYTYPE:  s.Type,
 		KEYVALUE: s.Value,
