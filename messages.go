@@ -28,7 +28,7 @@ type Message interface {
 	AsMap() map[string]interface{}
 }
 
-type recordMessage struct {
+type RecordMessage struct {
 	Type          string
 	Stream        string
 	Record        map[string]interface{} // a json copy of the record, must UnMarshal
@@ -38,14 +38,14 @@ type recordMessage struct {
 
 // Record should be json encoded already, type []byte. This ensures that when we encode the entire struct
 // that the whole record is proper json
-func newRecordMessage(stream string, jsonRecord []byte, version string, timeExtracted time.Time) (*recordMessage, error) {
+func newRecordMessage(stream string, jsonRecord []byte, version string, timeExtracted time.Time) (*RecordMessage, error) {
 	var r map[string]interface{}
 	err := json.Unmarshal(jsonRecord, &r) // this will reorder the keys so they're alphabetical
 	if err != nil {
 		return nil, err
 	}
 
-	return &recordMessage{
+	return &RecordMessage{
 		Type:          "RECORD",
 		Stream:        stream,
 		Record:        r,
@@ -56,7 +56,7 @@ func newRecordMessage(stream string, jsonRecord []byte, version string, timeExtr
 
 // returns the record and excludes unused fields like version and
 // extracted_time if they're equal to their zero values
-func (r recordMessage) AsMap() map[string]interface{} {
+func (r RecordMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
 		KEYTYPE:   r.Type,
 		KEYSTREAM: r.Stream,
@@ -71,7 +71,7 @@ func (r recordMessage) AsMap() map[string]interface{} {
 	return msg
 }
 
-type schemaMessage struct {
+type SchemaMessage struct {
 	Type          string
 	Stream        string
 	Schema        map[string]interface{} // a json copy of the schema, must UnMarshals
@@ -79,14 +79,14 @@ type schemaMessage struct {
 	Bookmarks     []string
 }
 
-func newSchemaMessage(stream string, schemaJson []byte, keyProperties []string, bookmarks []string) (*schemaMessage, error) {
+func newSchemaMessage(stream string, schemaJson []byte, keyProperties []string, bookmarks []string) (*SchemaMessage, error) {
 	var s map[string]interface{}
 	err := json.Unmarshal(schemaJson, &s)
 	if err != nil {
 		return nil, err
 	}
 
-	return &schemaMessage{
+	return &SchemaMessage{
 		Type:          "SCHEMA",
 		Stream:        stream,
 		Schema:        s,
@@ -95,7 +95,7 @@ func newSchemaMessage(stream string, schemaJson []byte, keyProperties []string, 
 	}, nil
 }
 
-func (s schemaMessage) AsMap() map[string]interface{} {
+func (s SchemaMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
 		KEYTYPE:       s.Type,
 		KEYSTREAM:     s.Stream,
@@ -108,26 +108,26 @@ func (s schemaMessage) AsMap() map[string]interface{} {
 	return msg
 }
 
-type stateMessage struct {
+type StateMessage struct {
 	Type  string
 	Value map[string]interface{}
 }
 
 // Value should be a json encoded string
-func newStateMessage(value []byte) (*stateMessage, error) {
+func newStateMessage(value []byte) (*StateMessage, error) {
 	var v map[string]interface{}
 	err := json.Unmarshal(value, &v)
 	if err != nil {
 		return nil, err
 	}
 
-	return &stateMessage{
+	return &StateMessage{
 		Type:  "STATE",
 		Value: v,
 	}, nil
 }
 
-func (s stateMessage) AsMap() map[string]interface{} {
+func (s StateMessage) AsMap() map[string]interface{} {
 	msg := map[string]interface{}{
 		KEYTYPE:  s.Type,
 		KEYVALUE: s.Value,

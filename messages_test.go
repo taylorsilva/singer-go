@@ -107,12 +107,12 @@ func TestParseMessage(t *testing.T) {
 	}{
 		{
 			input:  []byte(`{"type": "STATE", "value": {"users": 2, "locations": 1}}`),
-			output: stateMessage{Type: "STATE", Value: map[string]interface{}{"users": 2, "locations": 1}},
+			output: StateMessage{Type: "STATE", Value: map[string]interface{}{"users": 2, "locations": 1}},
 			err:    nil,
 		},
 		{
 			input: []byte(`{"type":"SCHEMA","stream":"users","schema":{"properties":{"name":{"type":"string"}},"type":"object"}}`),
-			output: schemaMessage{
+			output: SchemaMessage{
 				Type:   "SCHEMA",
 				Stream: "users",
 				Schema: map[string]interface{}{
@@ -127,7 +127,7 @@ func TestParseMessage(t *testing.T) {
 		},
 		{
 			input: []byte(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"}}`),
-			output: recordMessage{
+			output: RecordMessage{
 				Type:          "RECORD",
 				Stream:        "streamValue",
 				Version:       "",
