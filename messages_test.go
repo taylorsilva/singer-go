@@ -6,6 +6,7 @@ import (
 	"github.com/onsi/gomega"
 	"testing"
 	"time"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -98,13 +99,27 @@ func TestWriteState(t *testing.T) {
 }
 
 func TestParseMessage(t *testing.T) {
-	g := gomega.NewGomegaWithT(t)
+	//g := gomega.NewGomegaWithT(t)
 
 	tests := []struct {
 		input  []byte
 		output Message
 		err    error
 	}{
+		{
+			input: []byte(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"}}`),
+			output: RecordMessage{
+				Type:          "RECORD",
+				Stream:        "streamValue",
+				Version:       "",
+				TimeExtracted: time.Time{},
+				Record: map[string]interface{}{
+					"id":   12,
+					"name": "foo",
+				},
+			},
+			err: nil,
+		},
 		{
 			input:  []byte(`{"type": "STATE", "value": {"users": 2, "locations": 1}}`),
 			output: StateMessage{Type: "STATE", Value: map[string]interface{}{"users": 2, "locations": 1}},
@@ -125,25 +140,11 @@ func TestParseMessage(t *testing.T) {
 				}},
 			err: nil,
 		},
-		{
-			input: []byte(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"}}`),
-			output: RecordMessage{
-				Type:          "RECORD",
-				Stream:        "streamValue",
-				Version:       "",
-				TimeExtracted: time.Time{},
-				Record: map[string]interface{}{
-					"id":   12,
-					"name": "foo",
-				},
-			},
-			err: nil,
-		},
 	}
 
 	for _, test := range tests {
 		msg, err := ParseMessage(test.input)
-		g.Expect(msg).To(gomega.Equal(test.output))
-		g.Expect(err).To(gomega.Equal(test.err))
+		assert.Equal(t, test.output, msg)
+		assert.Equal(t, test.err, err)
 	}
 }
