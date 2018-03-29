@@ -4,4 +4,4 @@ The [singer-python](https://github.com/singer-io/singer-python/) library written
 
 ## Status
 
-Currently a work in progress. Implementing the most used features first like writing messages to stdout. Parsing messages will come next.
+Writing records, schema, state are working. Parsing messages is working as well.
