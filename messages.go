@@ -252,7 +252,7 @@ func ParseMessage(msg []byte) (Message, error) {
 		}
 
 		stream, _ := jsonMsg[KEYSTREAM].(string)
-		schema, _ := jsonMsg[KEYSTREAM].(map[string]interface{})
+		schema, _ := jsonMsg[KEYSCHEMA].(map[string]interface{})
 		keyProperties, _ := jsonMsg[KEYPROPERTIES].([]string)
 		bookmarks, _ := jsonMsg[KEYBOOKMARK].([]string)
 
