@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"time"
+	"bytes"
 )
 
 var (
@@ -212,8 +213,9 @@ func requiredKeys(jsonMsg map[string]interface{}, keys ...string) error {
 // returns one of the above message types, or nil and an error if there was an error
 func ParseMessage(msg []byte) (Message, error) {
 	var jsonRaw interface{}
-	err := json.Unmarshal(msg, &jsonRaw)
-	if err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(msg))
+	decoder.UseNumber() // ensures numbers aren't randomly converted or dropping decimals
+	if err := decoder.Decode(&jsonRaw); err != nil {
 		return nil, err
 	}
 
