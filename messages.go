@@ -68,7 +68,7 @@ func (r RecordMessage) AsMap() map[string]interface{} {
 		msg[KEYVERSION] = r.Version
 	}
 	if !r.TimeExtracted.Equal(time.Time{}) {
-		msg[KEYTIMEEXTRACTED] = r.TimeExtracted
+		msg[KEYTIMEEXTRACTED] = r.TimeExtracted.Format(time.RFC3339)
 	}
 	return msg
 }
