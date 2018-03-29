@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -107,22 +107,22 @@ func TestParseMessage(t *testing.T) {
 		err    error
 	}{
 		{
-			input: []byte(`{"type":"RECORD","stream":"streamValue","record":{"id":12,"name":"foo"}}`),
+			input: []byte(`{"type":"RECORD","stream":"streamValue","record":{"id":"12","name":"foo"}}`),
 			output: RecordMessage{
 				Type:          "RECORD",
 				Stream:        "streamValue",
 				Version:       "",
 				TimeExtracted: time.Time{},
 				Record: map[string]interface{}{
-					"id":   12,
+					"id":   "12",
 					"name": "foo",
 				},
 			},
 			err: nil,
 		},
 		{
-			input:  []byte(`{"type": "STATE", "value": {"locations": 1,"users": 2}}`),
-			output: StateMessage{Type: "STATE", Value: map[string]interface{}{"users": 2, "locations": 1}},
+			input:  []byte(`{"type": "STATE", "value": {"locations": "Toronto","users": "2"}}`),
+			output: StateMessage{Type: "STATE", Value: map[string]interface{}{"locations": "Toronto","users": "2"}},
 			err:    nil,
 		},
 		{
@@ -135,8 +135,8 @@ func TestParseMessage(t *testing.T) {
 						"name": map[string]interface{}{
 							"type": "string",
 						},
-						"type": "object",
 					},
+					"type": "object",
 				}},
 			err: nil,
 		},
