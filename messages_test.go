@@ -121,7 +121,7 @@ func TestParseMessage(t *testing.T) {
 			err: nil,
 		},
 		{
-			input:  []byte(`{"type": "STATE", "value": {"users": 2, "locations": 1}}`),
+			input:  []byte(`{"type": "STATE", "value": {"locations": 1,"users": 2}}`),
 			output: StateMessage{Type: "STATE", Value: map[string]interface{}{"users": 2, "locations": 1}},
 			err:    nil,
 		},

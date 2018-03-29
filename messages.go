@@ -2,6 +2,7 @@ package singer
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"os"
 	"time"
@@ -199,7 +200,81 @@ func WriteState(jsonValues []byte) error {
 	return nil
 }
 
-// returns one of the above message types
-func ParseMessage(jsonMsg []byte) (interface{}, error) {
+func requiredKeys(jsonMsg map[string]interface{}, keys ...string) error {
+	for _, key := range keys {
+		if _, ok := jsonMsg[key]; !ok {
+			return errors.New("message is missing required key: " + key)
+		}
+	}
+	return nil
+}
+
+// returns one of the above message types, or nil and an error if there was an error
+func ParseMessage(msg []byte) (Message, error) {
+	var jsonRaw interface{}
+	err := json.Unmarshal(msg, &jsonRaw)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonMsg, ok := jsonRaw.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("unable to parse json")
+	}
+
+	if err := requiredKeys(jsonMsg, KEYTYPE); err != nil {
+		return nil, err
+	}
+	switch jsonMsg[KEYTYPE] {
+	case "RECORD":
+		if err := requiredKeys(jsonMsg, KEYSTREAM, KEYRECORD); err != nil {
+			return nil, err
+		}
+		// to avoid panic, do type test and return null value
+		stream, _ := jsonMsg[KEYSTREAM].(string)
+		record, _ := jsonMsg[KEYRECORD].(map[string]interface{})
+		version, _ := jsonMsg[KEYVERSION].(string)
+		timeExtracted, _ := jsonMsg[KEYTIMEEXTRACTED].(time.Time)
+
+		return RecordMessage{
+			Type:          "RECORD",
+			Stream:        stream,
+			Record:        record,
+			Version:       version,
+			TimeExtracted: timeExtracted,
+		}, nil
+
+	case "SCHEMA":
+		if err := requiredKeys(jsonMsg, KEYSTREAM, KEYSCHEMA); err != nil {
+			return nil, err
+		}
+
+		stream, _ := jsonMsg[KEYSTREAM].(string)
+		schema, _ := jsonMsg[KEYSTREAM].(map[string]interface{})
+		keyProperties, _ := jsonMsg[KEYPROPERTIES].([]string)
+		bookmarks, _ := jsonMsg[KEYBOOKMARK].([]string)
+
+		return SchemaMessage{
+			Type:          "SCHEMA",
+			Stream:        stream,
+			Schema:        schema,
+			KeyProperties: keyProperties,
+			Bookmarks:     bookmarks,
+		}, nil
+
+	case "STATE":
+		if err := requiredKeys(jsonMsg, KEYVALUE); err != nil {
+			return nil, err
+		}
+
+		v, _ := jsonMsg[KEYVALUE].(map[string]interface{})
+
+		return StateMessage{
+			Type:  "STATE",
+			Value: v,
+		}, nil
+
+	}
+
 	return nil, nil
 }
